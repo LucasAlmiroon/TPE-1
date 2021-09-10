@@ -13,46 +13,45 @@
     <title>Trabajo-Especial-1</title>
 </head>
 <body>
+  <nav class="navbar navbar-dark bg-dark">
     <div class="container">
-        <div class="row">
-            <div class="col-sm">
-                <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Archivo</button>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
-                        <input type="file" class="custom-file-input" id="inputGroupFile01">
-                        <label class="custom-file-label" for="inputGroupFile01">Archivo</label>
-                        <button class="dropdown-item" type="button" id ="nuevo">Nuevo</button>
-                        <button class="dropdown-item" type="button" id="guardar">Guardar</button> 
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-sm">
-                    <div class="dropdown">
-                      <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Herramientas</button>
-                      <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
-                        <button class="dropdown-item" type="button" id = "lapiz">Lapiz</button>
-                        <button class="dropdown-item" type="button" id = "goma">Goma</button>
-                      </div>
-              </div>
-            </div>
-          <div class="col-sm">
-            <div class="dropdown">
-              <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Filtros
-                </button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
-                  <button class="dropdown-item" type="button" id = "filtronegativo">Negativo</button>
-                  <button class="dropdown-item" type="button" id = "filtrosepia">Sepia</button>
-                  <button class="dropdown-item" type="button" id ="filtrobinario">Binario</button>
-                  <button class="dropdown-item" type="button" id = "filtrogris">Grises</button>
-                  <button class="dropdown-item" type="button" id = "filtrogris">Blur</button>
-                  <button class="dropdown-item" type="button" id = "filtrogris">Bordes</button>
-                </div>
+      <div class="row">
+        <div class="col-sm ml-5 mr-5">
+          <div class="dropdown ml-5 mr-5">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Archivo</button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                <input type="file" class="custom-file-input" id="inputGroupFile01">
+                <label class="custom-file-label" for="inputGroupFile01">Archivo</label>
+                <button class="dropdown-item" type="button" id ="nuevo">Nuevo</button>
+                <button class="dropdown-item" type="button" id="guardar">Guardar</button> 
               </div>
           </div>
         </div>
+        <div class="col-sm ml-5 mr-5">
+          <div class="dropdown ml-5 mr-5">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Herramientas</button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                <button class="dropdown-item" type="button" id = "lapiz">Lapiz</button>
+                <button class="dropdown-item" type="button" id = "goma">Goma</button>
+              </div>
+          </div>
+        </div>
+        <div class="col-sm ml-5 mr-5">
+          <div class="dropdown ml-5 mr-5">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Filtros</button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+              <button class="dropdown-item" type="button" id = "filtronegativo">Negativo</button>
+              <button class="dropdown-item" type="button" id = "filtrosepia">Sepia</button>
+              <button class="dropdown-item" type="button" id ="filtrobinario">Binario</button>
+              <button class="dropdown-item" type="button" id = "filtrogris">Grises</button>
+              <button class="dropdown-item" type="button" id = "filtrogris">Blur</button>
+              <button class="dropdown-item" type="button" id = "filtrogris">Bordes</button>
+            </div>
+          </div>
+        </div>
       </div>
-    
-      <canvas id = "canvas" width="900" height="500" style="border: black solid 1px"></canvas>
+    </div>
+  </nav>
+  <canvas id = "canvas" width="900" height="500" style="border: black solid 1px"></canvas>
 </body>
 </html>

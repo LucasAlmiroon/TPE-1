@@ -1,6 +1,15 @@
+body{
+    background-image: url("../img/background.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
 canvas{
     margin: 0 0 0 15%;
 }
-div.container {
-    margin: 0 0 3% 15%
+nav {
+    margin: 0 0 3% 0;
+}
+div.dropdown{
+    margin: 0 50% 0 0;
 }
