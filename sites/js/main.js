@@ -8,6 +8,8 @@ document.addEventListener ("DOMContentLoaded", function(){
     let ch = canvas.height;
     let dataImgAnterior;
     let filtroAplicado = false;
+    let gomaActiva = false;
+    let lapizActivo = false;
 
     //Limpia el input, limpia el imagedata y genera un canvas nuevo.
     function canvasNuevo(){
@@ -62,9 +64,13 @@ document.addEventListener ("DOMContentLoaded", function(){
         document.body.appendChild(a);
         a.click();
     }
+    //Filtros
 
     //Verifica si hay un filtro aplicado, para no aplicar uno sobre otro, utilizando la imagen original.
     function verificarFiltro(){
+
+        desactivarRangosyLabel();
+
         if (filtroAplicado){
           ctx.putImageData(dataImgAnterior,0,0);
         }else{
@@ -153,7 +159,7 @@ document.addEventListener ("DOMContentLoaded", function(){
         ctx.putImageData(imageData, 0, 0);            
       }
     //Para el filtro binario se busca el promedio del rgb y dependiendo si es menor o mayor a 127 se elige si hacerlo blanco o negro.
-    function aplicarFiltroBinario(){    
+    function aplicarFiltroBinario(){
         verificarFiltro(); 
         
         let imageData = ctx.getImageData(0,0,canvas.width,canvas.height);
@@ -183,13 +189,160 @@ document.addEventListener ("DOMContentLoaded", function(){
             }
         }
         ctx.putImageData(imageData, 0, 0);
+    }
+    //Para aplicar brillo a las fotos se les suma un valor fijo a cada RGB en cada pixel.
+    function cambiarBrillo(){
+        verificarFiltro();
+
+        document.querySelector("#labelBrillo").style.visibility = "visible";
+        document.querySelector("#rangobrillo").style.visibility = "visible";
+
+        let k = document.querySelector("#rangobrillo").value*1.0;
+        let imageData = ctx.getImageData(0,0,canvas.width,canvas.height);
+    
+        for (let y=0;y<canvas.height;y++){
+            for (let x=0;x<canvas.width;x++){
+                index=(x+y*imageData.width)*4;
+                imageData.data[index+0]=rangeColor(imageData.data[index + 0] + k);
+                imageData.data[index+1]=rangeColor(imageData.data[index + 1] + k);
+                imageData.data[index+2]=rangeColor(imageData.data[index + 2] + k);
+            }
+        }
+        
+        ctx.putImageData(imageData,0,0);
+    }
+
+    //Para cambiar el contraste se utiliza la siguiente formula, la cual se multiplica.
+    function cambiarContraste(){
+        verificarFiltro();
+
+        document.querySelector("#labelContraste").style.visibility = "visible";
+        document.querySelector("#rangocontraste").style.visibility = "visible";     
+    
+        let rango = document.querySelector("#rangocontraste").value*1.0;
+    
+        let contraste = Math.tan(rango * Math.PI / 180.0);
+        let imageData = ctx.getImageData(0,0,canvas.width,canvas.height);
+    
+        for (let y=0;y<canvas.height;y++){
+            for (let x=0;x<canvas.width;x++){
+                index=(x+y*imageData.width)*4;
+                imageData.data[index+0]=rangeColor(128 + ((imageData.data[index + 0] - 128) * contraste));
+                imageData.data[index+1]=rangeColor(128 + ((imageData.data[index + 1] - 128) * contraste));
+                imageData.data[index+2]=rangeColor(128 + ((imageData.data[index + 2] - 128) * contraste));
+            }
+        }
+        
+        ctx.putImageData(imageData,0,0);
       }
+
+    //Se utiliza esta funcion para los parametros que dejan de estar en el rango de 0-255
+    function rangeColor(pixel) {
+        if (pixel < 0){
+            pixel = 0;
+        }
+        if (pixel > 255){
+            pixel = 255;
+        }
+        return pixel;
+    }
+
+    //Herramientas
+
+    //Funcion para conocer la posicion en el canvas.
+    function oMousePos(canvas, e) {
+        let ClientRect = canvas.getBoundingClientRect();
+             return {
+             x: Math.round(e.clientX - ClientRect.left),
+             y: Math.round(e.clientY - ClientRect.top)
+      }};
+    
+    //Diseño para el cursor, para que el usuario sepa que herramienta esta usando
+    function changeToCursor1(){
+        if (lapizActivo){
+          document.body.style.cursor="url('./sites/img/lapiz.ico'), default";
+        }else if(gomaActiva){
+          document.body.style.cursor="url('./sites/img/goma.ico'), default";  
+        }
+    }
+    
+    /*Captura los movimientos del mouse, verifica si se esta usando el lapiz o la goma. Utilizo la variable dibujando
+    para cuando se haga el evento mouseup tenga un parametro para dejar de dibujar.*/
+    function herramientas(dibujando){    
+        canvas.addEventListener('mousedown', e => {
+            dibujando = true;
+            ctx.beginPath();
+        });
+        
+        canvas.addEventListener("mousemove", e => {
+            if (dibujando) {
+                let m = oMousePos(canvas, e);
+                if (lapizActivo){
+                    ctx.lineTo(m.x, m.y);
+                    let color = document.querySelector("#colorLapiz").value;
+                    ctx.strokeStyle = color;
+                    ctx.stroke();
+                }else if (gomaActiva){
+                    ctx.fillStyle ="white";
+                    let rangogoma = document.querySelector("#rangogoma");
+                    ctx.fillRect(m.x,m.y,rangogoma.value,rangogoma.value);
+                }
+            }
+        });
+
+        canvas.addEventListener('mouseup', e => {
+            dibujando = false;
+        });    
+    }
+    
+    //Activa el lapiz y desactiva la goma
+    function dibujar(){
+        let dibujando = false;
+        lapizActivo = true;
+        gomaActiva = false;
+        desactivarRangosyLabel();
+        document.querySelector("#labelLapiz").style.visibility = "visible";
+        document.querySelector("#colorLapiz").style.visibility = "visible";    
+        changeToCursor1();
+        herramientas(dibujando);
+    }
+    //Activa la goma y desactiva el lapiz
+    function gomaBorrar(){
+        let borrando = false;
+        lapizActivo = false;
+        gomaActiva = true;
+        desactivarRangosyLabel()
+        document.querySelector("#labelGoma").style.visibility = "visible";      
+        document.querySelector("#rangogoma").style.visibility = "visible";
+        changeToCursor1();
+        herramientas(borrando);
+    }
+    //Oculta los rangos y paleta del lapiz para una interfaz mas amigable.
+    function desactivarRangosyLabel(){
+        document.querySelector("#labelGoma").style.visibility = "hidden";
+        document.querySelector("#labelLapiz").style.visibility = "hidden";
+        document.querySelector("#labelContraste").style.visibility = "hidden";
+        document.querySelector("#labelBrillo").style.visibility = "hidden";
+        document.querySelector("#rangogoma").style.visibility = "hidden";      
+        document.querySelector("#rangocontraste").style.visibility = "hidden";        
+        document.querySelector("#rangobrillo").style.visibility = "hidden";
+        document.querySelector("#colorLapiz").style.visibility = "hidden";
+    }
 
     canvasNuevo();
     document.querySelector('#nuevo').addEventListener('click',canvasNuevo);
     document.querySelector("#guardar").addEventListener("click",descargar);
+
     document.querySelector("#filtrogris").addEventListener('click',aplicarFiltroGris);
     document.querySelector("#filtronegativo").addEventListener('click',aplicarFiltroNegativo);
     document.querySelector("#filtrosepia").addEventListener('click',aplicarFiltroSepia);
     document.querySelector("#filtrobinario").addEventListener('click',aplicarFiltroBinario);
+    
+    document.querySelector("#lapiz").addEventListener('click',dibujar);
+    document.querySelector("#goma").addEventListener('click',gomaBorrar);
+
+    document.querySelector("#brillo").addEventListener('click',cambiarBrillo);
+    document.querySelector("#contraste").addEventListener('click',cambiarContraste);
+    document.querySelector("#rangocontraste").addEventListener('change',cambiarContraste);
+    document.querySelector("#rangobrillo").addEventListener('change',cambiarBrillo);
 })

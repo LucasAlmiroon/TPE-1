@@ -44,6 +44,8 @@
               <button class="dropdown-item" type="button" id = "filtrosepia">Sepia</button>
               <button class="dropdown-item" type="button" id ="filtrobinario">Binario</button>
               <button class="dropdown-item" type="button" id = "filtrogris">Grises</button>
+              <button class="dropdown-item" type="button" id = "brillo">Brillo</button>
+              <button class="dropdown-item" type="button" id = "contraste">Contraste</button>
               <button class="dropdown-item" type="button" id = "filtrogris">Blur</button>
               <button class="dropdown-item" type="button" id = "filtrogris">Bordes</button>
             </div>
@@ -53,5 +55,12 @@
     </div>
   </nav>
   <canvas id = "canvas" width="900" height="500" style="border: black solid 1px"></canvas>
+  <div id="herramientas">
+    <label id="labelContraste"> Contraste <input type="range" id="rangocontraste"></label>
+    <label id="labelBrillo"> Brillo <input type="range" id="rangobrillo"></label>
+    <label id="labelLapiz" >Selecciona el color del lapiz <input type="color" id="colorLapiz">  </label>
+    <label id="labelGoma">  Selecciona tamaño de la goma <input type="range" name="gomadeborrar" id="rangogoma"></label>
+  </div>
+
 </body>
 </html>

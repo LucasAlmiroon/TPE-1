@@ -7,3 +7,14 @@ body{
 canvas{
     margin: 3% 0 0 15%;
 }
+
+#herramientas{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+#rangogoma, #colorLapiz, #rangocontraste, #rangobrillo, #labelGoma, #labelLapiz, #labelContraste, #labelBrillo{
+    visibility: hidden;
+    color: white;
+}
