@@ -79,6 +79,7 @@ document.addEventListener ("DOMContentLoaded", function(){
       }
     //Aca utilizo 3 funciones generales, para el RGB.
     function getRed(index,imageData){
+
         return  imageData.data[index + 0];
     }
     
@@ -190,6 +191,101 @@ document.addEventListener ("DOMContentLoaded", function(){
         }
         ctx.putImageData(imageData, 0, 0);
     }
+
+    function aplicarFiltroBlur(){
+        verificarFiltro(); 
+        
+        let imageData = ctx.getImageData(0,0,canvas.width,canvas.height);
+        let w = imageData.width;
+        let h = imageData.height;
+        
+        for (let x = 1; x < w-1; x++){
+            for (let y = 1; y < h-1; y++){
+                let index = (x + w * y)*4;
+                let r = redSobel(x,y,w,index,imageData);
+                let g = greenSobel(x,y,w,index,imageData);
+                let b = blueSobel(x,y,w,index,imageData);
+                
+
+                imageData.data[index + 0] = r;
+                imageData.data[index + 1] = g;
+                imageData.data[index + 2] = b;
+            }
+        }
+        ctx.putImageData(imageData, 0, 0);
+    }
+
+    function redSobel(x,y,w,index,imageData){
+        let r1 = getRed(index,imageData);
+        index = ((x-1) + w * (y-1))*4;
+        let r2 = getRed(index,imageData);
+        index = ((x-1) + w * y)*4;
+        let r3 = getRed(index,imageData);
+        index = ((x-1) + w * (y+1))*4;
+        let r4 = getRed(index,imageData);
+        index = ((x+1) + w * (y-1))*4;
+        let r5 = getRed(index,imageData);
+        index = ((x+1) + w * (y+1))*4;
+        let r6 = getRed(index,imageData);
+        index = ((x+1) + w * y)*4;
+        let r7 = getRed(index,imageData);
+        index = (x + w * (y+1))*4;
+        let r8 = getRed(index,imageData);
+        index = (x + w * (y-1))*4;
+        let r9 = getRed(index,imageData);
+
+        let promedioRojo = (r1 + r2 + r3 + r4 + r5 + r6 + r7 + r8 + r9)/9
+        
+        return promedioRojo
+    }
+
+    function greenSobel(x,y,w,index,imageData){
+        let g1 = getGreen(index,imageData);
+        index = ((x-1) + w * (y-1))*4;
+        let g2 = getGreen(index,imageData);
+        index = ((x-1) + w * y)*4;
+        let g3 = getGreen(index,imageData);
+        index = ((x-1) + w * (y+1))*4;
+        let g4 = getGreen(index,imageData);
+        index = ((x+1) + w * (y-1))*4;
+        let g5 = getGreen(index,imageData);
+        index = ((x+1) + w * (y+1))*4;
+        let g6 = getGreen(index,imageData);
+        index = ((x+1) + w * y)*4;
+        let g7 = getGreen(index,imageData);
+        index = (x + w * (y+1))*4;
+        let g8 = getGreen(index,imageData);
+        index = (x + w * (y-1))*4;
+        let g9 = getGreen(index,imageData);
+
+        let promedioGreen = (g1 + g2 + g3 + g4 + g5 + g6 + g7 + g8 + g9)/9
+        
+        return promedioGreen
+    }
+    function blueSobel(x,y,w,index,imageData){
+        let b1 = getBlue(index,imageData);
+        index = ((x-1) + w * (y-1))*4;
+        let b2 = getBlue(index,imageData);
+        index = ((x-1) + w * y)*4;
+        let b3 = getBlue(index,imageData);
+        index = ((x-1) + w * (y+1))*4;
+        let b4 = getBlue(index,imageData);
+        index = ((x+1) + w * (y-1))*4;
+        let b5 = getBlue(index,imageData);
+        index = ((x+1) + w * (y+1))*4;
+        let b6 = getBlue(index,imageData);
+        index = ((x+1) + w * y)*4;
+        let b7 = getBlue(index,imageData);
+        index = (x + w * (y+1))*4;
+        let b8 = getBlue(index,imageData);
+        index = (x + w * (y-1))*4;
+        let b9 = getBlue(index,imageData);
+
+        let promedioBlue = (b1 + b2 + b3 + b4 + b5 + b6 + b7 + b8 + b9)/9
+        
+        return promedioBlue
+    }
+
     //Para aplicar brillo a las fotos se les suma un valor fijo a cada RGB en cada pixel.
     function cambiarBrillo(){
         verificarFiltro();
@@ -337,6 +433,7 @@ document.addEventListener ("DOMContentLoaded", function(){
     document.querySelector("#filtronegativo").addEventListener('click',aplicarFiltroNegativo);
     document.querySelector("#filtrosepia").addEventListener('click',aplicarFiltroSepia);
     document.querySelector("#filtrobinario").addEventListener('click',aplicarFiltroBinario);
+    document.querySelector("#filtroBlur").addEventListener('click',aplicarFiltroBlur);
     
     document.querySelector("#lapiz").addEventListener('click',dibujar);
     document.querySelector("#goma").addEventListener('click',gomaBorrar);
