@@ -77,7 +77,7 @@ document.addEventListener ("DOMContentLoaded", function(){
           filtroAplicado = true;
         }
       }
-    //Aca utilizo 3 funciones generales, para el RGB.
+    //Aca utilizo 4 funciones generales, para el RGB y Alpha.
     function getRed(index,imageData){
 
         return  imageData.data[index + 0];
@@ -89,6 +89,10 @@ document.addEventListener ("DOMContentLoaded", function(){
         
     function getBlue(index,imageData){
         return  imageData.data[index + 2];
+    }
+
+    function getAlpha(index,imageData){
+        return  imageData.data[index + 3];
     }
     //Aplica filtro negativo, pidiendo los rgb de la imagen y restandoselo a 255
     function aplicarFiltroNegativo(){
@@ -205,11 +209,13 @@ document.addEventListener ("DOMContentLoaded", function(){
                 let r = redSobel(x,y,w,index,imageData);
                 let g = greenSobel(x,y,w,index,imageData);
                 let b = blueSobel(x,y,w,index,imageData);
+                let a = alphaSobel(x,y,w,index,imageData);
                 
 
                 imageData.data[index + 0] = r;
                 imageData.data[index + 1] = g;
                 imageData.data[index + 2] = b;
+                imageData.data[index + 3] = a;
             }
         }
         ctx.putImageData(imageData, 0, 0);
@@ -234,9 +240,9 @@ document.addEventListener ("DOMContentLoaded", function(){
         index = (x + w * (y-1))*4;
         let r9 = getRed(index,imageData);
 
-        let promedioRojo = (r1 + r2 + r3 + r4 + r5 + r6 + r7 + r8 + r9)/9
+        let promedioRojo = (r1 + r2 + r3 + r4 + r5 + r6 + r7 + r8 + r9)/9;
         
-        return promedioRojo
+        return promedioRojo;
     }
 
     function greenSobel(x,y,w,index,imageData){
@@ -258,9 +264,9 @@ document.addEventListener ("DOMContentLoaded", function(){
         index = (x + w * (y-1))*4;
         let g9 = getGreen(index,imageData);
 
-        let promedioGreen = (g1 + g2 + g3 + g4 + g5 + g6 + g7 + g8 + g9)/9
+        let promedioGreen = (g1 + g2 + g3 + g4 + g5 + g6 + g7 + g8 + g9)/9;
         
-        return promedioGreen
+        return promedioGreen;
     }
     function blueSobel(x,y,w,index,imageData){
         let b1 = getBlue(index,imageData);
@@ -281,9 +287,33 @@ document.addEventListener ("DOMContentLoaded", function(){
         index = (x + w * (y-1))*4;
         let b9 = getBlue(index,imageData);
 
-        let promedioBlue = (b1 + b2 + b3 + b4 + b5 + b6 + b7 + b8 + b9)/9
+        let promedioBlue = (b1 + b2 + b3 + b4 + b5 + b6 + b7 + b8 + b9)/9;
         
-        return promedioBlue
+        return promedioBlue;
+    }
+
+    function alphaSobel(x,y,w,index,imageData){
+        let a1 = getAlpha(index,imageData);
+        index = ((x-1) + w * (y-1))*4;
+        let a2 = getAlpha(index,imageData);
+        index = ((x-1) + w * y)*4;
+        let a3 = getAlpha(index,imageData);
+        index = ((x-1) + w * (y+1))*4;
+        let a4 = getAlpha(index,imageData);
+        index = ((x+1) + w * (y-1))*4;
+        let a5 = getAlpha(index,imageData);
+        index = ((x+1) + w * (y+1))*4;
+        let a6 = getAlpha(index,imageData);
+        index = ((x+1) + w * y)*4;
+        let a7 = getAlpha(index,imageData);
+        index = (x + w * (y+1))*4;
+        let a8 = getAlpha(index,imageData);
+        index = (x + w * (y-1))*4;
+        let a9 = getAlpha(index,imageData);
+
+        let promedioAlpha = (a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9)/9;
+        
+        return promedioAlpha;
     }
 
     //Para aplicar brillo a las fotos se les suma un valor fijo a cada RGB en cada pixel.
