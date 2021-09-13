@@ -44,6 +44,7 @@ document.addEventListener ("DOMContentLoaded", function(){
             let image = new Image();          
             image.src = content;          
             image.onload = function(){
+                canvasNuevo();
                 canvas.width = this.width;
                 canvas.height = this.height;
                 ctx.drawImage(image,0,0,canvas.width,canvas.height);
@@ -195,9 +196,34 @@ document.addEventListener ("DOMContentLoaded", function(){
         }
         ctx.putImageData(imageData, 0, 0);
     }
-
+    //Para aplicar el filtro de blur, se busca el promedio de los valores vecinos de la matriz.
     function aplicarFiltroBlur(){
-        verificarFiltro(); 
+        verificarFiltro();
+        
+        let imageData = ctx.getImageData(0,0,canvas.width,canvas.height);
+        let w = imageData.width;
+        let h = imageData.height;
+        
+        for (let x = 2; x < w-2; x++){
+            for (let y = 2; y < h-2; y++){
+                let index = (x + w * y)*4;
+
+                let r = promRed(x,y,w,imageData);
+                let g = promGreen(x,y,w,imageData);
+                let b = promBlue(x,y,w,imageData);
+                
+                
+                imageData.data[index + 0] = r;
+                imageData.data[index + 1] = g;
+                imageData.data[index + 2] = b;
+            }
+        }
+        ctx.putImageData(imageData, 0, 0);
+    }
+
+    //Para el filtro de la transparencia, igual que el blur, pero se toma en cuenta el alpha.
+    function aplicarFiltroTransparencia(){
+        verificarFiltro();
         
         let imageData = ctx.getImageData(0,0,canvas.width,canvas.height);
         let w = imageData.width;
@@ -206,114 +232,69 @@ document.addEventListener ("DOMContentLoaded", function(){
         for (let x = 1; x < w-1; x++){
             for (let y = 1; y < h-1; y++){
                 let index = (x + w * y)*4;
-                let r = redSobel(x,y,w,index,imageData);
-                let g = greenSobel(x,y,w,index,imageData);
-                let b = blueSobel(x,y,w,index,imageData);
-                let a = alphaSobel(x,y,w,index,imageData);
+
+                let a = promAlpha(x,y,w,imageData);
                 
 
-                imageData.data[index + 0] = r;
-                imageData.data[index + 1] = g;
-                imageData.data[index + 2] = b;
                 imageData.data[index + 3] = a;
             }
         }
         ctx.putImageData(imageData, 0, 0);
     }
 
-    function redSobel(x,y,w,index,imageData){
-        let r1 = getRed(index,imageData);
-        index = ((x-1) + w * (y-1))*4;
-        let r2 = getRed(index,imageData);
-        index = ((x-1) + w * y)*4;
-        let r3 = getRed(index,imageData);
-        index = ((x-1) + w * (y+1))*4;
-        let r4 = getRed(index,imageData);
-        index = ((x+1) + w * (y-1))*4;
-        let r5 = getRed(index,imageData);
-        index = ((x+1) + w * (y+1))*4;
-        let r6 = getRed(index,imageData);
-        index = ((x+1) + w * y)*4;
-        let r7 = getRed(index,imageData);
-        index = (x + w * (y+1))*4;
-        let r8 = getRed(index,imageData);
-        index = (x + w * (y-1))*4;
-        let r9 = getRed(index,imageData);
+    function promRed(x,y,w,imageData){
+        let promRed = 0;
+        let index;
 
-        let promedioRojo = (r1 + r2 + r3 + r4 + r5 + r6 + r7 + r8 + r9)/9;
-        
-        return promedioRojo;
+        for(i = x-2; i < x+3; i++){
+            for(e = y-2; e < y+3; e++){
+                index = ((i + (w * e))*4);
+                promRed += getRed(index,imageData);
+            }
+        }
+
+        return promRed/25;
     }
 
-    function greenSobel(x,y,w,index,imageData){
-        let g1 = getGreen(index,imageData);
-        index = ((x-1) + w * (y-1))*4;
-        let g2 = getGreen(index,imageData);
-        index = ((x-1) + w * y)*4;
-        let g3 = getGreen(index,imageData);
-        index = ((x-1) + w * (y+1))*4;
-        let g4 = getGreen(index,imageData);
-        index = ((x+1) + w * (y-1))*4;
-        let g5 = getGreen(index,imageData);
-        index = ((x+1) + w * (y+1))*4;
-        let g6 = getGreen(index,imageData);
-        index = ((x+1) + w * y)*4;
-        let g7 = getGreen(index,imageData);
-        index = (x + w * (y+1))*4;
-        let g8 = getGreen(index,imageData);
-        index = (x + w * (y-1))*4;
-        let g9 = getGreen(index,imageData);
+    function promGreen(x,y,w,imageData){
+        let promGreen = 0;
+        let index;
 
-        let promedioGreen = (g1 + g2 + g3 + g4 + g5 + g6 + g7 + g8 + g9)/9;
-        
-        return promedioGreen;
+        for(i = x-2; i < x+3; i++){
+            for(e = y-2; e < y+3; e++){
+                index = (i + w * e)*4
+                promGreen += getGreen(index,imageData);
+            }
+        }
+
+        return promGreen/25;
     }
-    function blueSobel(x,y,w,index,imageData){
-        let b1 = getBlue(index,imageData);
-        index = ((x-1) + w * (y-1))*4;
-        let b2 = getBlue(index,imageData);
-        index = ((x-1) + w * y)*4;
-        let b3 = getBlue(index,imageData);
-        index = ((x-1) + w * (y+1))*4;
-        let b4 = getBlue(index,imageData);
-        index = ((x+1) + w * (y-1))*4;
-        let b5 = getBlue(index,imageData);
-        index = ((x+1) + w * (y+1))*4;
-        let b6 = getBlue(index,imageData);
-        index = ((x+1) + w * y)*4;
-        let b7 = getBlue(index,imageData);
-        index = (x + w * (y+1))*4;
-        let b8 = getBlue(index,imageData);
-        index = (x + w * (y-1))*4;
-        let b9 = getBlue(index,imageData);
+    function promBlue(x,y,w,imageData){
+        let promBlue = 0;
+        let index;
 
-        let promedioBlue = (b1 + b2 + b3 + b4 + b5 + b6 + b7 + b8 + b9)/9;
-        
-        return promedioBlue;
+        for(i = x-2; i < x+3; i++){
+            for(e = y-2; e < y+3; e++){
+                index = (i + w * e)*4
+                promBlue += getBlue(index,imageData);
+            }
+        }
+
+        return promBlue/25;
     }
 
-    function alphaSobel(x,y,w,index,imageData){
-        let a1 = getAlpha(index,imageData);
-        index = ((x-1) + w * (y-1))*4;
-        let a2 = getAlpha(index,imageData);
-        index = ((x-1) + w * y)*4;
-        let a3 = getAlpha(index,imageData);
-        index = ((x-1) + w * (y+1))*4;
-        let a4 = getAlpha(index,imageData);
-        index = ((x+1) + w * (y-1))*4;
-        let a5 = getAlpha(index,imageData);
-        index = ((x+1) + w * (y+1))*4;
-        let a6 = getAlpha(index,imageData);
-        index = ((x+1) + w * y)*4;
-        let a7 = getAlpha(index,imageData);
-        index = (x + w * (y+1))*4;
-        let a8 = getAlpha(index,imageData);
-        index = (x + w * (y-1))*4;
-        let a9 = getAlpha(index,imageData);
+    function promAlpha(x,y,w,imageData){
+        let promAlpha = 0;
+        let index;
 
-        let promedioAlpha = (a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9)/9;
-        
-        return promedioAlpha;
+        for(i = x-1; i < x+2; i++){
+            for(e = y-1; e < y+2; e++){
+                index = (i + w * e)*4
+                promAlpha = getAlpha(index,imageData);
+            }
+        }    
+
+        return promAlpha/9;
     }
 
     //Para aplicar brillo a las fotos se les suma un valor fijo a cada RGB en cada pixel.
@@ -417,6 +398,7 @@ document.addEventListener ("DOMContentLoaded", function(){
         });
 
         canvas.addEventListener('mouseup', e => {
+            dataImgAnterior = ctx.getImageData(0,0,canvas.width,canvas.height);
             dibujando = false;
         });    
     }
@@ -464,6 +446,7 @@ document.addEventListener ("DOMContentLoaded", function(){
     document.querySelector("#filtrosepia").addEventListener('click',aplicarFiltroSepia);
     document.querySelector("#filtrobinario").addEventListener('click',aplicarFiltroBinario);
     document.querySelector("#filtroBlur").addEventListener('click',aplicarFiltroBlur);
+    document.querySelector("#filtroTransparencia").addEventListener('click',aplicarFiltroTransparencia);
     
     document.querySelector("#lapiz").addEventListener('click',dibujar);
     document.querySelector("#goma").addEventListener('click',gomaBorrar);
