@@ -6,7 +6,9 @@ document.addEventListener ("DOMContentLoaded", function(){
     //Creo estas variables para guardar el tamaño original del canvas.
     let cw = canvas.width;
     let ch = canvas.height;
+    //Guarda la data de la imagen para cuando se aplican los filtros que no sea uno sobre otro.
     let dataImgAnterior;
+    //Variables de control.
     let filtroAplicado = false;
     let gomaActiva = false;
     let lapizActivo = false;
@@ -28,7 +30,7 @@ document.addEventListener ("DOMContentLoaded", function(){
         canvas.height = ch;
         ctx.fillStyle ="white";
         ctx.fillRect(0,0,cw,ch);
-      }
+    }
 
     //Cuando llega el evento al input, ejecuta el cargarImagen.
     input.onchange = e =>{cargarImagen(e)}
@@ -52,12 +54,13 @@ document.addEventListener ("DOMContentLoaded", function(){
                 dataImgAnterior = ctx.getImageData(0,0,canvas.width,canvas.height);
             }
         }
-      }
-
+    }
+    
     function descargar(){
         let dataURL = canvas.toDataURL("image/jpeg", 1.0);
         downloadImage(dataURL, 'imagen.jpeg');
     }
+
     function downloadImage(data, filename = 'untitled.jpeg') {
         let a = document.createElement('a');
         a.href = data;
@@ -78,9 +81,9 @@ document.addEventListener ("DOMContentLoaded", function(){
           filtroAplicado = true;
         }
       }
-    //Aca utilizo 4 funciones generales, para el RGB y Alpha.
+    
+    //Aca utilizo 4 funciones get, para el RGB y Alpha.
     function getRed(index,imageData){
-
         return  imageData.data[index + 0];
     }
     
@@ -95,6 +98,7 @@ document.addEventListener ("DOMContentLoaded", function(){
     function getAlpha(index,imageData){
         return  imageData.data[index + 3];
     }
+    
     //Aplica filtro negativo, pidiendo los rgb de la imagen y restandoselo a 255
     function aplicarFiltroNegativo(){
         verificarFiltro();
@@ -117,6 +121,7 @@ document.addEventListener ("DOMContentLoaded", function(){
         }
         ctx.putImageData(imageData, 0, 0);          
     }
+    
     //En el filtro gris, se hace un promedio de los valores rgb.
     function aplicarFiltroGris(){
         verificarFiltro();
@@ -141,6 +146,7 @@ document.addEventListener ("DOMContentLoaded", function(){
         }
         ctx.putImageData(imageData, 0, 0);            
     }
+    
     //Para el filtro sepia se utiliza esa formula, sacando el porcentaje en rgb de cada pixel
     function aplicarFiltroSepia(){
         verificarFiltro();
@@ -163,7 +169,8 @@ document.addEventListener ("DOMContentLoaded", function(){
             }
         }
         ctx.putImageData(imageData, 0, 0);            
-      }
+    }
+    
     //Para el filtro binario se busca el promedio del rgb y dependiendo si es menor o mayor a 127 se elige si hacerlo blanco o negro.
     function aplicarFiltroBinario(){
         verificarFiltro(); 
@@ -196,6 +203,7 @@ document.addEventListener ("DOMContentLoaded", function(){
         }
         ctx.putImageData(imageData, 0, 0);
     }
+    
     //Para aplicar el filtro de blur, se busca el promedio de los valores vecinos de la matriz.
     function aplicarFiltroBlur(){
         verificarFiltro();
@@ -269,6 +277,7 @@ document.addEventListener ("DOMContentLoaded", function(){
 
         return promGreen/25;
     }
+    
     function promBlue(x,y,w,imageData){
         let promBlue = 0;
         let index;
@@ -414,6 +423,7 @@ document.addEventListener ("DOMContentLoaded", function(){
         changeToCursor1();
         herramientas(dibujando);
     }
+
     //Activa la goma y desactiva el lapiz
     function gomaBorrar(){
         let borrando = false;
@@ -425,6 +435,7 @@ document.addEventListener ("DOMContentLoaded", function(){
         changeToCursor1();
         herramientas(borrando);
     }
+
     //Oculta los rangos y paleta del lapiz para una interfaz mas amigable.
     function desactivarRangosyLabel(){
         document.querySelector("#labelGoma").style.visibility = "hidden";
